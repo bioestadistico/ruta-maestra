@@ -1,0 +1,57 @@
+name: Publicar versión
+
+# Cada cambio guardado en la skill (push a main) crea una versión nueva
+# (v1.0 -> v1.1 -> v1.2 ...) con el archivo ruta-maestra.zip (nombre fijo).
+# Incluye SKILL.md, references/ y el libro (biblioteca/).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "SKILL.md"
+      - "references/**"
+      - "biblioteca/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publicar
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calcular la siguiente versión
+        id: ver
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          last=$(gh release list --limit 100 --json tagName --jq '.[].tagName' | grep -E '^v[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          if [ -z "$last" ]; then next="v1.0"; else
+            major=${last#v}; major=${major%%.*}; minor=${last##*.}
+            next="v${major}.$((minor + 1))"
+          fi
+          echo "tag=$next" >> "$GITHUB_OUTPUT"
+          echo "Nueva versión: $next"
+
+      - name: Empaquetar la skill
+        run: |
+          mkdir -p dist/ruta-maestra-investigacion-cientifica
+          cp SKILL.md dist/ruta-maestra-investigacion-cientifica/
+          cp -r references biblioteca dist/ruta-maestra-investigacion-cientifica/
+          cd dist && zip -r ../ruta-maestra.zip ruta-maestra-investigacion-cientifica
+
+      - name: Crear la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.ver.outputs.tag }}" ruta-maestra.zip \
+            --target "$GITHUB_SHA" \
+            --title "Ruta Maestra ${{ steps.ver.outputs.tag }}" \
+            --notes "$(git log -1 --pretty=%B)"
