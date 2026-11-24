@@ -1,6 +1,6 @@
 name: Publicar versión
 
-# Cada cambio guardado en la skill (push a main) crea una versión nueva
+# Solo los cambios que llegan a main (no a desarrollo) crea una versión nueva
 # (v1.0 -> v1.1 -> v1.2 ...) con el archivo ruta-maestra.zip (nombre fijo).
 # Incluye SKILL.md, references/ y el libro (biblioteca/).
 on:

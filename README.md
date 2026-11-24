@@ -10,7 +10,9 @@ Instalación y video tutorial: [ruta48.com](https://ruta48.com/ruta-maestra-de-l
 
 ## Cómo se publica
 
-Cada cambio guardado en `SKILL.md` o en `references/` crea solo una versión nueva (v1.1, v1.2…) con el archivo `ruta-maestra.zip`. El enlace de arriba y el botón de ruta48.com siempre entregan la más reciente.
+Cada cambio que llega a la rama `main` en `SKILL.md`, `references/` o `biblioteca/` crea solo una versión nueva (v1.1, v1.2…) con el archivo `ruta-maestra.zip`. El enlace de arriba y el botón de ruta48.com siempre entregan la más reciente.
+
+La rama `desarrollo` es el borrador: los cambios guardados ahí no se publican. Cuando estén listos, se fusionan a `main` y sale la versión nueva.
 
 ## Para el autor: trabajar desde varias computadoras
 
